@@ -39,5 +39,4 @@ class LLMRetriever:
                 "keywords": self.__keywords
             }
         )
-        print("KEY: ", key)
         return self.__docs[key]

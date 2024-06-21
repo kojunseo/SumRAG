@@ -5,3 +5,4 @@ langchain-openai
 langchain-text-splitters
 langchainhub
 langchain==0.1.12
+sentence-transformers
