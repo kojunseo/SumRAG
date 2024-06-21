@@ -18,6 +18,8 @@ class SumInput:
     
 
     def save(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
         for keyword in self.keywords:
             with open(os.path.join(path, keyword + ".json"), "w") as f:
                 ojson.dump(
