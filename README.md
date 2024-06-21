@@ -1,44 +1,86 @@
 # SumRAG
 * 요약데이터를 활용한 압축 및 LLM 기반 Retrieve 방식을 통해 더욱 효과적인 데이터 검색으로 정확한 정답을 도출할 수 있는 기법을 제안합니다.
 * 또한, Hierachy한 검색 기법으로, 기존 대비 더 적은 데이터를 생성에 활용할 수 있도록 특정하여, 정확한 결과물을 도출합니다.
+* 자세한 개발 과정과 동기는 [이 문서]("./PD.md")를 참고하세요.
 
-## Problem Definition
-### 왜 문서 검색(Retrieve)가 잘 안될까?
-* 예를 들어, `유통기한이 지난 음식의 환불 규정이 뭐야?`라는 질문이 들어왔다고 가정해봅시다. 
-* 문서 중, `1. 유통기한에 관한 처리 규정`과 `2. 고객 환불 규정`이라는 두개의 문서가 있을때, Embedding 등을 활용한 유사도 기반의 검색 방식을 사용했을때, 어떤 문서를 사용할 가능성이 높을까요?
-* 아마도, 1번 문서를 선택할 가능성이 높을 것입니다. 사실 진짜 의도는 '**환불**'임에도 '**유통기한**'에 더 많은 집중을 하게 될 것이죠.
+## How to install
+```bash
+pip install git+https://github.com/kojunseo/SumRAG
+```
 
-<img src="./figs/fig1.png" width=70%>
+## How to use
+### 1. Prepare data
+```
+-folderA
+ ├---Document 1
+ ├---Document 2
+ └---Document 2 
+```
 
-## How to Solve.
-### 그렇다면 LLM에게 저걸 판단하게 해보면 어떨까?
-* 저희는 그래서 LLM에게 저 두개의 문서 중 어떤 것을 참고하면 좋을지 파악하면 좋을지 판단하도록 해보았습니다.
-* 이 방법을 사용했을 때, 질문의 의도에 맞는 결과를 더 잘 생성하지만 모든 문서를 입력으로 주게 되어 높은 비용이 발생하는 문제가 발생하였습니다.
-* 특히, 문서의 개수가 10개, 100개가 되어간다면, LLM의 입력가능한 토큰 수에서 벗어나는 문제가 발생합니다.
+* Document1: #뒤에 제목 \n뒤에 실제 내용 \n은 몇개를 써도 무방함
+```
+#한글은 무엇인가?\n한글은 대한민국의 문자로...
+#누가 한글을 만들었는가?\n한글을 만든사람: 세종대왕
+#한글의 구조\n한글은 다음으로 구성됨\n자음: N개\n모음:N개
+```
 
-<img src="./figs/fig2.png" width=70%>
+### 2. Load Data & Save the data
+* Preprocess and load from `folderA`
+```python
+from SumRAG.llms import get_llm
+from SumRAG.documents import SumInput
 
+llm3 = get_llm("gpt3_5")
+documents = SumInput.load_from_files("./folderA", llm3)
+```
 
-### LLM이 판단에 사용하는 문서를 줄여보자. 효과적으로. (Summary + LLM Retriever)
-* 그래서 저희는 각 문서에 대한 요약 정보를 LLM을 통해 사전에 생성하도록 하였습니다. 매번 사용하지 않도록요.
-* 그리고 해당 정보를 저장해두었습니다. 그리고 LLM에게 해당 요약 정보를 기반으로 어떤 문서를 참고하면 좋을지 판단하도록 하였습니다.
-* 이를 통해, 더 정확한 문서를 탐지할 수 있습니다.
+* Save the Document
+```python
+documents.save("./folderA_doc")
+```
 
-<img src="./figs/fig3.png" width=70%>
+* Load from saved data
+```python
+documents.load("./folderA_doc")
+```
 
-<img src="./figs/fig4.png" width=70%>
+### Define Retriever, Generator, and ask question
+```python
+from SumRAG.retrieve import HierRetriever, LLMRetriever, EMBRetriever
+from SumRAG.generation import BasicGenerator
+from SumRAG.embeddings import get_emb
+from langchain_core.output_parsers import StrOutputParser
 
-### 추가적으로 얻어지는 효과 (Summary + Embedding Retreiver)
-* 여기서 추가적인 실험을 위해, Summary를 사용하여 Embedding을 추출하고 이를 retrieve하였습니다. 
-* 이렇게 하자, 전체 문서에 대한 임베딩을 기반으로 타겟 문서를 탐색했을 때보다 높은 정확도를 보였습니다.
+emb = get_emb("hf_kr")
+llm3 = get_llm("gpt3_5")
 
-<img src="./figs/fig5.png" width=70%>
+retriever = HierRetriever(llm=llm3, s_input=documents)
+retriever = LLMRetriever(llm=llm3, s_input=documents)
+retriever = EMBRetriever(emb=emb, s_input=documents)
+generator = BasicGenerator(llm=llm3, retriever_fn=retriever, output_parser=StrOutputParser())
 
-## Summary Generation
-* 요약을 생성하기 위해 다양한 방법을 사용할 수 있지만, 저희는 
+print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
+```
 
+### Full Code
+```python
+from SumRAG.retrieve import HierRetriever, LLMRetriever, EMBRetriever
+from SumRAG.generation import BasicGenerator
+from SumRAG.embeddings import get_emb
+from SumRAG.llms import get_llm
+from SumRAG.documents import SumInput
 
-## LLM Retriever
+emb = get_emb("hf_kr")
+llm3 = get_llm("gpt3_5")
 
+documents = SumInput.load_from_files("./folderA", llm3)
+documents.save("./folderA_doc")
+# documents.load("./folderA_doc")
 
-## Hierachical Retriever
+retriever = HierRetriever(llm=llm3, s_input=documents)
+retriever = LLMRetriever(llm=llm3, s_input=documents)
+retriever = EMBRetriever(emb=emb, s_input=documents)
+generator = BasicGenerator(llm=llm3, retriever_fn=retriever, output_parser=StrOutputParser())
+
+print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
+```
