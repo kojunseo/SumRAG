@@ -1,0 +1,7 @@
+ojson==0.1.0
+langchain-community
+langchain-google-genai
+langchain-openai
+langchain-text-splitters
+langchainhub
+langchain==0.1.12
