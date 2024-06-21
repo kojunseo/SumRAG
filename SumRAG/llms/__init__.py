@@ -1,7 +1,8 @@
 from difflib import get_close_matches
 from langchain_openai import ChatOpenAI
 from langchain_community.chat_models import ChatOllama
-from langchain.llms import HuggingFaceHub
+# from langchain.llms import HuggingFaceHub
+from langchain_community.chat_models.huggingface import ChatHuggingFace
 
 
 possible_llms = ["hf_kr", "llama3_8b", "llama3_70b", "llama3_kr", "qwen2_kr", "ggml_kr", "gpt3_5", "gpt4_0"]
