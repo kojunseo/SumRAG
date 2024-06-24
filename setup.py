@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='SumRAG',
-    version='0.1.0',
+    version='0.1.1',
     author="Junseo Ko",
     description="RAG with summarization and LLM based retrieve for chapter-based documents",
     packages=find_packages(include=['SumRAG', 'SumRAG.*']),
