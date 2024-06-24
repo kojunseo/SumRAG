@@ -27,11 +27,10 @@ pip install git+https://github.com/kojunseo/SumRAG
 ### 2. Load Data & Save the data
 * Preprocess and load from `folderA`
 ```python
-from SumRAG.llms import get_llm
+from SumRAG import LLMs
 from SumRAG.documents import SumInput
 
-llm3 = get_llm("gpt3_5")
-documents = SumInput.load_from_files("./folderA", llm3)
+documents = SumInput.load_from_files("./folderA", LLMs.gpt3_5)
 ```
 
 * Save the Document
@@ -45,42 +44,35 @@ documents.load("./folderA_doc")
 ```
 
 ### Define Retriever, Generator, and ask question
+* For more details about each modules, refer the docstring.
 ```python
-from SumRAG.retrieve import HierRetriever, LLMRetriever, EMBRetriever
+from SumRAG import LLMs, EMBs
+from SumRAG.retrieve import HierLLMRetriever, HierEMBMixRetriever, LLMRetriever, EMBRetriever
 from SumRAG.generation import BasicGenerator
-from SumRAG.embeddings import get_emb
-from langchain_core.output_parsers import StrOutputParser
 
-emb = get_emb("hf_kr")
-llm3 = get_llm("gpt3_5")
+# choose one
+retriever = LLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
+retriever = EMBRetriever(emb=EMBs.openai, s_input=documents)
+retriever = HierLLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
+retriever = HierEMBMixRetriever(llm=LLMs.gpt3_5, emb=EMBs.openai, s_input=documents)
 
-retriever = HierRetriever(llm=llm3, s_input=documents)
-retriever = LLMRetriever(llm=llm3, s_input=documents)
-retriever = EMBRetriever(emb=emb, s_input=documents)
-generator = BasicGenerator(llm=llm3, retriever_fn=retriever, output_parser=StrOutputParser())
-
+generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
 print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
 ```
 
-### Full Code
+### Full Example Code
 ```python
+from SumRAG import LLMs, EMBs
 from SumRAG.retrieve import HierRetriever, LLMRetriever, EMBRetriever
 from SumRAG.generation import BasicGenerator
-from SumRAG.embeddings import get_emb
-from SumRAG.llms import get_llm
 from SumRAG.documents import SumInput
 
-emb = get_emb("hf_kr")
-llm3 = get_llm("gpt3_5")
-
-documents = SumInput.load_from_files("./folderA", llm3)
+documents = SumInput.load_from_files("./folderA", LLMs.gpt3_5)
 documents.save("./folderA_doc")
 # documents.load("./folderA_doc")
 
-retriever = HierRetriever(llm=llm3, s_input=documents)
-retriever = LLMRetriever(llm=llm3, s_input=documents)
-retriever = EMBRetriever(emb=emb, s_input=documents)
-generator = BasicGenerator(llm=llm3, retriever_fn=retriever, output_parser=StrOutputParser())
+retriever = HierLLMRetriever(emb=EMBs.openai, s_input=documents)
+generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever, output_parser=StrOutputParser())
 
 print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
 ```

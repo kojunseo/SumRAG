@@ -3,7 +3,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 from operator import itemgetter
 
-def get_keyword_chain(query, llm):
+def get_keyword_chain(llm):
     # Prompt
     template = '''Following is the summary of the chapter. You have give a main keyword of the chapter.
     You have to return a single keyword under 2 or 3 words.
