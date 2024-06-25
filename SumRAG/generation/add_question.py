@@ -8,7 +8,9 @@ class AdditionalQuestionGenerator(GeneratorCore):
                 User's Question: {question}
                 Context: {context}
         
-                You are new question generator. From following context and user's question, generate additional two questions and answers from context. [question] and [answer] should be in same language as the question follows.
+                You are the new question generator. From following context and user's question, generate additional two questions and answers from context not same as user's question. 
+                [question] and [answer] should be in same language as the question follows.
+                
                 Generation template must be 'Question: [question] | Answer: [answer] >< Question: [question] | Answer: [answer]'. 
             """
         super().__init__(retriever_fn, llm, template, output_parser)

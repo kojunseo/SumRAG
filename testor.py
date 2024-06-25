@@ -9,19 +9,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-documents = SumInput.load_from_files("./ke_education_txt", LLMs.gpt3_5)
-documents.save("./ke_education_json")
+# documents = SumInput.load_from_files("./ke_education_txt", LLMs.gpt3_5)
+# documents.save("./ke_education_json")
 
 documents = SumInput.load("./src/ke_education_json")
 
-# retriever = HierLLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
+retriever = HierLLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
 # retriever = EMBRetriever(emb=EMBs.hf_kr, s_input=documents)
-retriever = HierEMBMixRetriever(emb=EMBs.hf_kr, llm=LLMs.gpt3_5, s_input=documents)
+# retriever = HierLLMRetriever(emb=EMBs.hf_kr, llm=LLMs.gpt3_5, s_input=documents)
 
 generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
 additional_generator = AdditionalQuestionGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
 
-question = "부취제를 첨가하는 목적은 무엇인가요?"
+question = "부취제가 무엇인가요?"
 
 print(generator(question))
 
