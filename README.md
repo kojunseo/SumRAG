@@ -25,6 +25,7 @@ pip install git+https://github.com/kojunseo/SumRAG
 #누가 한글을 만들었는가?\n한글을 만든사람: 세종대왕
 #한글의 구조\n한글은 다음으로 구성됨\n자음: N개\n모음:N개
 ```
+* See [example](./example/txt/) for the dataset
 
 ### 2. Load Data & Save the data
 * Preprocess and load from `folderA`
@@ -65,7 +66,7 @@ print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
 ### Full Example Code
 ```python
 from SumRAG import LLMs, EMBs
-from SumRAG.retrieve import HierRetriever, LLMRetriever, EMBRetriever
+from SumRAG.retrieve import HierLLMRetriever, LLMRetriever, EMBRetriever
 from SumRAG.generation import BasicGenerator
 from SumRAG.documents import SumInput
 
@@ -73,8 +74,8 @@ documents = SumInput.load_from_files("./folderA", LLMs.gpt3_5)
 documents.save("./folderA_doc")
 # documents.load("./folderA_doc")
 
-retriever = HierLLMRetriever(emb=EMBs.openai, s_input=documents)
-generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever, output_parser=StrOutputParser())
+retriever = HierLLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
+generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
 
 print(generator("상한 식품의 환불은 어디에 물어봐야 하나요?"))
 ```

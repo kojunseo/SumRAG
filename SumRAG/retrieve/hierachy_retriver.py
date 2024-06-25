@@ -97,12 +97,12 @@ class HierLLMRetriever:
         self.__llm = llm
         self.__docs = s_input.docs
 
-        prompt1 = ChatPromptTemplate.from_template('''Following is the explanation of the document titles of {keywords}:
+        prompt1 = ChatPromptTemplate.from_template('''You are keyword based retreiver. Following context is the explanation of the document titles:
         {context}
 
-        Return a single keyword between {keywords} that is most relevant to the user's question.
+        Return a single keyword between {keywords} that is most relevant to the user's question. Just return the keyword, not the explanation.
         Question: {question}
-        Just return the keyword, not the explanation.
+        Answer: 
         ''')
         prompt2 = ChatPromptTemplate.from_template("""Following is the explanation of the each document titles of {length} documents:
         {context}

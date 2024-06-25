@@ -9,12 +9,12 @@ class LLMRetriever:
         self.__docs = s_input.docs
 
 
-        template = '''Following is the explanation of the document titles of {keywords}:
+        template = '''You are keyword based retreiver. Following context is the explanation of the document titles:
         {context}
 
-        Return a single keyword between {keywords} that is most relevant to the user's question.
+        Return a single keyword between {keywords} that is most relevant to the user's question. Only return keyword string, not the explanation or punctuations.
         Question: {question}
-        Just return the keyword, not the explanation.
+        Answer: 
         '''
 
         prompt = ChatPromptTemplate.from_template(template)
