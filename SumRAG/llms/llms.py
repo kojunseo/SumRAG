@@ -74,8 +74,16 @@ class LLMs:
             model="qwen2-7b-instruct-q8_0:latest"
         )
         return llms
+    
+    @AsIsProperty
+    @staticmethod
+    def gemma2_9b() -> ChatOllama:
+        llms = ChatOllama(
+            model="gemma2:9b"
+        )
+        return llms
 
 if __name__ == "__main__":
     # class property to a real value
-    print(LLMs.gpt3_5)
+    print(LLMs.gemma2_9b)
     # print(LLMs.gpt4)

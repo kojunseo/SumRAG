@@ -13,8 +13,8 @@ load_dotenv()
 documents = SumInput.load("./example/documents")
 
 # retriever = HierLLMRetriever(llm=LLMs.gpt3_5, s_input=documents)
-retriever = HierLLMRetriever( llm=LLMs.gpt3_5, s_input=documents) 
-generator = BasicGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
+retriever = HierLLMRetriever( llm=LLMs.gemma2_9b, s_input=documents) 
+generator = BasicGenerator(llm=LLMs.gemma2_9b, retriever_fn=retriever)
 
 question = "80% 미만으로 근무한 근로자에게 며칠의 유급휴가를 주어야 할까?"
 
@@ -25,11 +25,11 @@ print(f"[AI]\n{answer}") # 80% 미만으로 근무한 근로자에게는 한 달
 
 
 # 추가질문 생성 -> 아래 기능은 아직은 실험적인 기능이기 때문에, 오류가 발생하거나 결과가 나오지 않을 수 있습니다.
-# additional_generator = AdditionalQuestionGenerator(llm=LLMs.gpt3_5, retriever_fn=retriever)
-# add_q = additional_generator(question)
+additional_generator = AdditionalQuestionGenerator(llm=LLMs.gemma2_9b, retriever_fn=retriever)
+add_q = additional_generator(question)
 
-# print("추가질문 1: ", add_q[0][0])
-# print("답변: ", add_q[1][0])
-# print()
-# print("추가질문 2: ", add_q[0][1])
-# print("답변: ", add_q[1][1])
+print("추가질문 1: ", add_q[0][0])
+print("답변: ", add_q[1][0])
+print()
+print("추가질문 2: ", add_q[0][1])
+print("답변: ", add_q[1][1])

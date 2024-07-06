@@ -1,3 +1,4 @@
+import re
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
@@ -138,6 +139,7 @@ class HierLLMRetriever:
                 "keywords": self.__keywords
             }
         )
+        key = re.sub(r'[^ a-zA-Z]', '', key).strip()
         doc_from_1 = self.__docs[key]
         keyword_explains = "\n".join([f"{idx}: " +dc.metadata["keyword"] for idx, dc in enumerate(doc_from_1)])
         keywords = [dc.metadata["keyword"] for dc in doc_from_1]
@@ -148,9 +150,10 @@ class HierLLMRetriever:
                 "keywords": keywords,
                 "length": len(doc_from_1)
             }
-        )
+        ).strip()
+
         list_doc = map(int, doc_from_2.split(" "))
-        
+
         out = [doc_from_1[i] for i in list_doc]
         return out
 
